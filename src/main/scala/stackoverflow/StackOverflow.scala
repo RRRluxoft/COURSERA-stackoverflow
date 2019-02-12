@@ -1,6 +1,6 @@
 package stackoverflow
 
-import org.apache.spark.{RangePartitioner, SparkConf, SparkContext}
+import org.apache.spark.{HashPartitioner, RangePartitioner, SparkConf, SparkContext}
 import org.apache.spark.SparkContext._
 import org.apache.spark.rdd.RDD
 
@@ -134,6 +134,8 @@ class StackOverflow extends Serializable {
     cached.map(t => (firstLangInTag(t._1.tags, langs), t._2))
       .filter(_._1.nonEmpty)
       .map(t => (t._1.get * langSpread, t._2))
+      .partitionBy(new HashPartitioner(langs.length))
+      .cache()
   }
 
 
